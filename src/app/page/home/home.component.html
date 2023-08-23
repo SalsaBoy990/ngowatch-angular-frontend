@@ -1,0 +1,16 @@
+<main>
+
+  <header class="d-flex p-2 align-items-center gap-3">
+    <img class="img-thumbnail avatar-image" [src]="assetUrl + user?.user_detail?.avatar"
+         [alt]="user?.name">
+    <h1>{{ user?.name + ' (' + user?.handle + ')' }}</h1>
+  </header>
+
+  <p>Email: <span class="fw-bold">{{ user?.email }}</span></p>
+  <p>Role: <span class="fw-bold">{{ user?.role?.name }}</span></p>
+
+  <hr>
+  <h2 class="h4 text-muted">Introduction</h2>
+  <p>{{ user?.user_detail?.bio }}</p>
+
+</main>
