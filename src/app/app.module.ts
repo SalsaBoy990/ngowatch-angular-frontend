@@ -13,6 +13,7 @@ import {UserEditComponent} from './page/user-edit/user-edit.component';
 import {ForbiddenComponent} from './page/forbidden/forbidden.component';
 import {TokenInterceptorService} from "./service/token-interceptor.service";
 import { BaseComponent } from './component/base/base.component';
+import { RegisterComponent } from './page/register/register.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { BaseComponent } from './component/base/base.component';
     UsersComponent,
     UserEditComponent,
     ForbiddenComponent,
-    BaseComponent
+    BaseComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

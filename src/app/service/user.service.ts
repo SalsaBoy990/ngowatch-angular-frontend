@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ConfigService} from "./config.service";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 import {User} from "../model/user";
 
 @Injectable({
@@ -10,6 +10,7 @@ import {User} from "../model/user";
 export class UserService {
 
   entity: string = 'users';
+  resendEmailUrl: string = `${this.config.apiUrl}email/resend`;
 
   constructor(
     private http: HttpClient,
@@ -18,24 +19,25 @@ export class UserService {
   }
 
 
-  get(id?: string | number): Observable<User|User[]> {
+  get(id?: string | number): Observable<User | User[]> {
     let url = `${this.config.apiUrl}${this.entity}`;
     if (id) {
       url += `/${id}`;
     }
-    return this.http.get<User|User[]>(url);
+    return this.http.get<User | User[]>(url);
   }
 
 
   getLoggedInUser(token: string | undefined): Observable<User> {
     const url = `${this.config.apiUrl}user`;
+
+    this.resendEmailVerificationLink(token);
     return this.http.get<User>(url, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
   }
-
 
 
   query(queryString: string): Observable<User[]> {
@@ -46,6 +48,21 @@ export class UserService {
   update(user: User): Observable<User> {
     const url = `${this.config.apiUrl}${this.entity}/${user.id}`;
     return this.http.put<User>(url, user);
+  }
+
+  resendEmailVerificationLink(token: string | undefined) {
+    lastValueFrom(this.http.get<any>(this.resendEmailUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })).then(
+      response => {
+        console.log(response)
+      },
+      err => {
+        console.log(err)
+      },
+    );
   }
 
 

@@ -6,7 +6,10 @@ import {switchMap} from "rxjs/operators";
 import {User} from "../model/user";
 import {Router} from "@angular/router";
 import {UserService} from "./user.service";
-import {LoginResponse} from "../interface/login-response";
+import {LoginResponse} from "../interface/response/login-response";
+import {RegisterResponse} from "../interface/response/register-response";
+import {RegisterRequest} from "../interface/request/register-request";
+import {ErrorResponse} from "../model/error-response";
 
 @Injectable({
   providedIn: 'root'
@@ -15,15 +18,19 @@ export class AuthService {
 
   loginUrl: string = `${this.config.apiUrl}login`;
   logoutUrl: string = `${this.config.apiUrl}logout`;
+  registerUrl: string = `${this.config.apiUrl}register`;
+  resendEmailUrl: string = `${this.config.apiUrl}email/resend`;
+
   currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   storageName = 'currentUser';
   lastToken: string | undefined = '';
+  error: string;
 
   constructor(
     private config: ConfigService,
     private http: HttpClient,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
   ) {
   }
 
@@ -56,7 +63,7 @@ export class AuthService {
    *
    * @param loginData
    */
-  login(loginData: User): Observable<LoginResponse | User | null> {
+  login(loginData: User): Observable<LoginResponse | ErrorResponse | User | null> {
     return this.http.post<LoginResponse>(
       this.loginUrl,
       {email: loginData.email, password: loginData['password']}
@@ -107,6 +114,43 @@ export class AuthService {
 
     // Navigate to login page
     this.router.navigate(['login']).then(r => console.log(r));
+  }
+
+
+  /**
+   * Registers a user and redirects to login page after (also sends email verification link)
+   *
+   **/
+  register(registerData: RegisterRequest): Observable<RegisterResponse | null> {
+    return this.http.post<RegisterResponse>(
+      this.registerUrl,
+      {
+        name: registerData.name,
+        email: registerData.email,
+        password: registerData.password,
+        password_confirmation: registerData.password_confirmation
+      }
+    )
+      .pipe(switchMap(response => {
+        if (response) {
+          console.log(response)
+          return of(response);
+        }
+        return of(null);
+      }));
+  }
+
+
+  /** Resends an email verification link */
+  resend() {
+    return this.http.post<any>(this.resendEmailUrl, {})
+      .pipe(switchMap(response => {
+        if (response) {
+          console.log(response)
+          return of(response);
+        }
+        return of(null);
+      }));
   }
 
 

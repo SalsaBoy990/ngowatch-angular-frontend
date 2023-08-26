@@ -5,6 +5,8 @@ import {LoginComponent} from "./page/login/login.component";
 import {UserEditComponent} from "./page/user-edit/user-edit.component";
 import {UsersComponent} from "./page/users/users.component";
 import {ForbiddenComponent} from "./page/forbidden/forbidden.component";
+import {RegisterComponent} from "./page/register/register.component";
+
 import {authGuard} from "./guard/auth.guard";
 import {roleGuard} from "./guard/role.guard";
 import {loggedinGuard} from "./guard/loggedin.guard";
@@ -15,6 +17,11 @@ const routes: Routes = [
     path: '',
     component: HomeComponent,
     canActivate: [authGuard]
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [],
   },
   {
     path: 'login',

@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-12 text-center">
+    <form
+      #registerForm="ngForm"
+      (ngSubmit)="onRegister(registerForm)"
+      class="form-register mt-5"
+    >
+      <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
+
+      <p *ngIf="nameField.invalid && nameField.touched" class="error-message">Please type a valid name.</p>
+      <label for="inputName" class="sr-only">Username</label>
+      <input
+        type="text"
+        name="name"
+        [(ngModel)]="user.name"
+        #nameField="ngModel"
+        id="inputName"
+        class="form-control"
+        placeholder="Username"
+        autocomplete="username"
+        required
+        autofocus
+      >
+
+      <label for="inputEmail" class="sr-only">Email address</label>
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="user.email"
+        #emailField="ngModel"
+        email
+        id="inputEmail"
+        class="form-control"
+        placeholder="Email address"
+        autocomplete="email"
+        required
+        autofocus
+      >
+      <p *ngIf="emailField.invalid && emailField.touched" class="error-message">Please type a valid email.</p>
+      <ul *ngIf="validationErrors?.email">
+        <ng-container *ngFor="let error of validationErrors.email">
+          <li class="error-message">{{error}}</li>
+        </ng-container>
+      </ul>
+
+
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input
+        type="password"
+        id="inputPassword"
+        name="password"
+        [(ngModel)]="user.password"
+        #passwordField
+        class="form-control"
+        placeholder="Password"
+        autocomplete="new-password"
+        required
+      >
+
+      <label for="inputPasswordConfirmation" class="sr-only">Password</label>
+      <input
+        type="password"
+        id="inputPasswordConfirmation"
+        name="password_confirmation"
+        [(ngModel)]="user.password_confirmation"
+        #passwordConfirmationField
+        class="form-control"
+        placeholder="Password Again"
+        autocomplete="new-password"
+        required
+      >
+      <ul *ngIf="validationErrors?.password">
+        <ng-container *ngFor="let error of validationErrors.password">
+            <li class="error-message">{{error}}</li>
+        </ng-container>
+      </ul>
+
+      <button
+        class="btn btn-lg btn-primary btn-block"
+        type="submit"
+        [disabled]="registerForm.invalid"
+      >Sign in
+      </button>
+
+
+      <div *ngIf="serverError && registerForm.submitted" class="alert alert-danger mt-3">
+        {{ serverError }}
+      </div>
+
+      <p class="mt-5 mb-3 text-muted">&copy; 2020</p>
+    </form>
+  </div>
+</div>
+

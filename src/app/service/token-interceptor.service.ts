@@ -23,6 +23,16 @@ export class TokenInterceptorService implements HttpInterceptor {
       });
     }
 
+    // Resend email verification link route needs token when currentUser is null
+    // "lastToken" is saved in a property after successful login endpoint call
+    if (!currentUser && this.auth.lastToken) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${this.auth.lastToken}`
+        }
+      });
+    }
+
     return next.handle(request);
   }
 }

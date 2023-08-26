@@ -12,6 +12,7 @@ export class ConfigService {
 
   navigation: Navigation[] = [
     {label: 'Home', href: '', role: 1},
+    {label: 'Register', href: '/register', role: 0},
     {label: 'Users', href: '/users', role: 2},
   ];
 

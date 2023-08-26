@@ -6,6 +6,12 @@
       class="form-signin mt-5"
     >
       <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+      <div *ngIf="notVerifiedMessage" class="alert alert-info mt-3">
+        {{ notVerifiedMessage }}
+      </div>
+
+
       <p
         *ngIf="emailField.invalid && emailField.touched"
         class="error-message"
@@ -48,6 +54,8 @@
         [disabled]="loginForm.invalid"
       >Sign in
       </button>
+
+      <a href="/" >Forgot your password?</a>
 
       <div *ngIf="serverError && loginForm.submitted" class="alert alert-danger mt-3">
         {{ serverError }}
