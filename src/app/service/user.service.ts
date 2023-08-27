@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {ConfigService} from "./config.service";
 import {lastValueFrom, Observable} from "rxjs";
+
+import {ConfigService} from "./config.service";
 import {User} from "../model/user";
+import {SuccessResponse} from "../interface/response/success-response";
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +35,7 @@ export class UserService {
     const url = `${this.config.apiUrl}user`;
 
     this.resendEmailVerificationLink(token);
+
     return this.http.get<User>(url, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -51,7 +55,7 @@ export class UserService {
   }
 
   resendEmailVerificationLink(token: string | undefined) {
-    lastValueFrom(this.http.get<any>(this.resendEmailUrl, {
+    lastValueFrom(this.http.get<SuccessResponse>(this.resendEmailUrl, {
       headers: {
         Authorization: `Bearer ${token}`
       }

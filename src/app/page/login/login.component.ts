@@ -14,7 +14,8 @@ export class LoginComponent implements OnInit {
 
   user: User = new User();
   serverError: string = '';
-  notVerifiedMessage: string = '';
+  notification: string = '';
+  alertType: string = '';
 
   constructor(
     private auth: AuthService,
@@ -25,12 +26,12 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     // get the "email verification needed" message from route query params
-    this.route.queryParams.
-      subscribe(params => {
-          this.notVerifiedMessage = params['notVerifiedMessage'] ?? '';
-          console.log(this.notVerifiedMessage);
-        }
-      );
+    this.route.queryParams.subscribe(params => {
+        this.notification = params['notification'] ?? '';
+        this.alertType = params['alertType'] ?? 'danger'
+        console.log(this.notification);
+      }
+    );
   }
 
   onLogin(ngForm: NgForm): void {
@@ -42,14 +43,14 @@ export class LoginComponent implements OnInit {
         }
       },
       err => {
-        this.serverError = err.message;
+        this.serverError = err.error.message;
 
         // only resends verification link if user is not yet verified
         this.auth.resend();
 
         // notify user to check their email inbox
-        if (err.error.message === 'Your email address is not verified.') {
-          this.notVerifiedMessage= 'Check your email inbox for the email verification link!';
+        if (this.serverError === 'Your email address is not verified.') {
+          this.notification = 'Check your email inbox for the email verification link!';
         }
 
         const to = setTimeout(() => {

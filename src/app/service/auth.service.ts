@@ -9,17 +9,20 @@ import {UserService} from "./user.service";
 import {LoginResponse} from "../interface/response/login-response";
 import {RegisterResponse} from "../interface/response/register-response";
 import {RegisterRequest} from "../interface/request/register-request";
-import {ErrorResponse} from "../model/error-response";
+import {SuccessResponse} from "../interface/response/success-response";
+import {Base} from "../class/base";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService extends Base {
 
   loginUrl: string = `${this.config.apiUrl}login`;
   logoutUrl: string = `${this.config.apiUrl}logout`;
   registerUrl: string = `${this.config.apiUrl}register`;
   resendEmailUrl: string = `${this.config.apiUrl}email/resend`;
+  sendPasswordResetLinkUrl: string = `${this.config.apiUrl}password/email`;
+  resetPasswordUrl: string = `${this.config.apiUrl}password/reset`;
 
   currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   storageName = 'currentUser';
@@ -32,6 +35,7 @@ export class AuthService {
     private router: Router,
     private userService: UserService,
   ) {
+    super();
   }
 
 
@@ -63,7 +67,7 @@ export class AuthService {
    *
    * @param loginData
    */
-  login(loginData: User): Observable<LoginResponse | ErrorResponse | User | null> {
+  login(loginData: User): Observable<LoginResponse | User | null> {
     return this.http.post<LoginResponse>(
       this.loginUrl,
       {email: loginData.email, password: loginData['password']}
@@ -71,8 +75,9 @@ export class AuthService {
 
       .pipe(switchMap(response => {
         if (response.result?.access_token) {
+
+          // Need the lastToken if getLoggedInUser fails (case: when email is not yet verified)
           this.lastToken = response.result?.access_token;
-          console.log(this.lastToken)
           return this.userService.getLoggedInUser(this.lastToken);
         }
         return of(null);
@@ -99,6 +104,7 @@ export class AuthService {
 
   /**
    * Logs user out
+   *
    */
   logout() {
     // this call invalidates the token
@@ -141,7 +147,10 @@ export class AuthService {
   }
 
 
-  /** Resends an email verification link */
+  /**
+   * Resends an email verification link
+   *
+   **/
   resend() {
     return this.http.post<any>(this.resendEmailUrl, {})
       .pipe(switchMap(response => {
@@ -154,18 +163,48 @@ export class AuthService {
   }
 
 
-  isUserObjectEmpty(obj: User | null) {
-    if (obj === null) {
-      return false
-    }
+  /**
+   * Sends password reset link to the user in email
+   *
+   **/
+  sendPasswordResetLink(sendPasswordResetData: { email: string }) {
+    return this.http.post<SuccessResponse | null>(
+      this.sendPasswordResetLinkUrl,
+      {email: sendPasswordResetData.email}
+    )
+      .pipe(switchMap(response => {
+        if (response) {
+          console.log(response)
+          return of(response);
+        }
+        return of(null);
+      }));
+  }
 
-    for (const prop in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-        return false;
+
+  /**
+   * Registers a user and redirects to login page after (also sends email verification link)
+   *
+   **/
+  saveNewPassword(saveNewPasswordData: {
+    email: string, password: string, password_confirmation: string, token: string
+  }): Observable<SuccessResponse | null> {
+    return this.http.post<any>(
+      this.resetPasswordUrl,
+      {
+        token: saveNewPasswordData.token,
+        email: saveNewPasswordData.email,
+        password: saveNewPasswordData.password,
+        password_confirmation: saveNewPasswordData.password_confirmation
       }
-    }
-
-    return true;
+    )
+      .pipe(switchMap(response => {
+        if (response) {
+          console.log(response)
+          return of(response);
+        }
+        return of(null);
+      }));
   }
 
 }

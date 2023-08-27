@@ -4,25 +4,29 @@ import {Navigation} from "../../interface/navigation";
 import {Subscription} from "rxjs";
 import {User} from "../../model/user";
 import {AuthService} from "../../service/auth.service";
+import {Base} from "../../class/base";
 
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
-export class NavComponent implements OnInit, OnDestroy {
+export class NavComponent extends Base implements OnInit, OnDestroy {
 
   navigation: Navigation[] = this.config.navigation;
   loginStatus: boolean = false;
   userSubscription: Subscription;
   user: User | null = null;
 
+
   constructor(
     private config: ConfigService,
     private auth: AuthService,
   ) {
+    super();
     this.userSubscription = this.auth.currentUserSubject.subscribe(user => this.user = user);
   }
+
 
   ngOnInit(): void {
     this.userSubscription = this.auth.currentUserSubject.subscribe(
@@ -38,26 +42,14 @@ export class NavComponent implements OnInit, OnDestroy {
 
   }
 
+
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
   }
 
+
   onLogout() {
     this.auth.logout();
-  }
-
-  isUserObjectEmpty(obj: User|null) {
-    if (obj === null) {
-      return false
-    }
-
-    for (const prop in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
 }

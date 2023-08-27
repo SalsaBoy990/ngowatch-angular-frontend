@@ -11,9 +11,10 @@ import {LoginComponent} from './page/login/login.component';
 import {UsersComponent} from './page/users/users.component';
 import {UserEditComponent} from './page/user-edit/user-edit.component';
 import {ForbiddenComponent} from './page/forbidden/forbidden.component';
-import {TokenInterceptorService} from "./service/token-interceptor.service";
-import { BaseComponent } from './component/base/base.component';
 import { RegisterComponent } from './page/register/register.component';
+import { ForgotPasswordComponent } from './page/forgot-password/forgot-password.component';
+import {TokenInterceptorService} from "./service/token-interceptor.service";
+import { ResetPasswordComponent } from './page/reset-password/reset-password.component';
 
 
 @NgModule({
@@ -25,8 +26,9 @@ import { RegisterComponent } from './page/register/register.component';
     UsersComponent,
     UserEditComponent,
     ForbiddenComponent,
-    BaseComponent,
-    RegisterComponent
+    RegisterComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
